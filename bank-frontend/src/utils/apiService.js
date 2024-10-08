@@ -12,6 +12,7 @@ const api = axios.create({
 
 /**
  * Interceptor to automatically add the token to the request headers if it exists in localStorage.
+ *
  * @param {Object} config - Axios request configuration.
  * @returns {Object} Updated request configuration with Authorization header if token is present.
  */
@@ -24,7 +25,7 @@ api.interceptors.request.use(
     return config
   },
   (error) => {
-    console.error('Error sending request:', error)
+    console.error('Error sending request:', error) // Log request error
     return Promise.reject(error) // Handle request error
   },
 )
@@ -32,10 +33,11 @@ api.interceptors.request.use(
 /**
  * Logs in the user by sending a POST request to the login endpoint.
  * Stores the received token in localStorage.
+ *
  * @param {string} email - User's email address.
  * @param {string} password - User's password.
  * @returns {Promise<string>} The authentication token if login is successful.
- * @throws Will throw an error if login fails.
+ * @throws {Error} Will throw an error if login fails.
  */
 export const login = async (email, password) => {
   try {
@@ -61,50 +63,54 @@ export const login = async (email, password) => {
 
 /**
  * Fetches the user's profile from the API.
+ *
  * @returns {Promise<Object>} The user's profile data.
- * @throws Will throw an error if the token is missing or the request fails.
+ * @throws {Error} Will throw an error if the token is missing or the request fails.
  */
 export const fetchUserProfile = async () => {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('token') // Retrieve token from localStorage
 
   const response = await fetch('http://localhost:3001/api/v1/user/profile', {
-    method: 'POST', // Assurez-vous que la méthode correspond à celle de votre API
+    method: 'POST', // Ensure the method matches that of your API
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`, // Ajoutez le token d'autorisation ici
+      Authorization: `Bearer ${token}`, // Add the authorization token here
     },
   })
 
   if (!response.ok) {
-    throw new Error('Network response was not ok')
+    throw new Error('Network response was not ok') // Handle network errors
   }
 
-  return await response.json() // Convertissez la réponse en JSON
+  return await response.json() // Convert the response to JSON
 }
 
 /**
  * Updates the user's profile by sending a PUT request to the profile endpoint.
- * @param {string} firstName - User's new first name.
- * @param {string} lastName - User's new last name.
+ *
+ * @param {Object} userData - The new data for the user's profile.
+ * @param {string} userData.firstName - User's new first name.
+ * @param {string} userData.lastName - User's new last name.
  * @returns {Promise<Object>} The updated profile data.
- * @throws Will throw an error if the update fails.
+ * @throws {Error} Will throw an error if the update fails.
  */
 export const updateUserProfile = async (userData) => {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('token') // Retrieve token from localStorage
 
   try {
     const response = await fetch('http://localhost:3001/api/v1/user/profile', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`, // Add the authorization token here
       },
-      body: JSON.stringify(userData),
+      body: JSON.stringify(userData), // Convert userData to JSON string
     })
 
-    const data = await response.json()
+    const data = await response.json() // Convert the response to JSON
     return data
   } catch (error) {
-    console.error('Error updating user profile:', error)
+    console.error('Error updating user profile:', error) // Log error
+    throw error // Propagate error if the update fails
   }
 }

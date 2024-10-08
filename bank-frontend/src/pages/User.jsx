@@ -4,11 +4,16 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getUser } from '../slices/userSlice'
 import EditName from '../components/EditName'
 
+/**
+ * User component for displaying user profile and account information.
+ *
+ * @returns {JSX.Element} The rendered User component.
+ */
 const User = () => {
   const dispatch = useDispatch()
-  // const user = useSelector((state) => state.user)
   const [isEditing, setIsEditing] = useState(false)
-  const [error] = useState(null) // État pour gérer les erreurs
+  const [error, setError] = useState(null) // State for error handling
+  const [loading, setLoading] = useState(true) // State for loading indicator
   const token = localStorage.getItem('token')
 
   useEffect(() => {
@@ -16,17 +21,17 @@ const User = () => {
       if (token) {
         try {
           const response = await fetchUserProfile()
-          console.log('API Response:', response) // Ajoutez ceci pour voir la réponse
           if (response && response.body) {
             const { firstName, lastName } = response.body
-            console.log('Fetched user data:', { firstName, lastName }) // Vérifiez ici
-            console.log('Dispatching user data:', { firstName, lastName })
             dispatch(getUser({ firstName, lastName }))
           } else {
-            console.log('Invalid response structure:', response) // Ajoutez ceci pour vérifier la structure de la réponse
+            setError('Failed to fetch user data.') // Set error if response is invalid
           }
         } catch (error) {
           console.error('Error fetching user profile:', error)
+          setError('Error fetching user profile. Please try again.') // Set error message
+        } finally {
+          setLoading(false) // Set loading to false after fetching
         }
       }
     }
@@ -34,17 +39,17 @@ const User = () => {
     fetchUserData()
   }, [token, dispatch])
 
-  // Log pour vérifier l'état de l'utilisateur après dispatch
+  // Log to check the user state after dispatch
   const user = useSelector((state) => state.user)
   console.log('Current user state:', user)
 
-  // Gestion de l'affichage d'erreurs
+  // Display error message if there's an error
   if (error) {
     return <div>{error}</div>
   }
 
-  // Vérification des données utilisateur
-  if (!user || !user.firstName || !user.lastName) {
+  // Display loading indicator while fetching data
+  if (loading) {
     return <div>Loading...</div>
   }
 
@@ -74,7 +79,7 @@ const User = () => {
 
         <h2 className="sr-only">Accounts</h2>
 
-        {/* Sections de compte */}
+        {/* Account sections */}
         <section className="account">
           <div className="account-content-wrapper">
             <h3 className="account-title">Argent Bank Checking (x8349)</h3>
