@@ -293,3 +293,37 @@ body {
     width: 200px;
   }
 }
+.edit {
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-form {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+  margin-bottom: 0.813rem;
+}
+
+.edit-input {
+  width: 15.688rem;
+  height: 3.375rem;
+  border-radius: 4px;
+  font-size: 1.375rem;
+}
+
+.edit-click {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+  margin-bottom: 2.75rem;
+}
+
+.edit-btn {
+  width: 9.688rem;
+  height: 2.75rem;
+  border-radius: 4px;
+  font-size: 1.125rem;
+  color: #00bc77;
+  border: solid 1px #00bc77;
+}
